@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { signIn, signUp } from '../auth';
+import { signIn, signUp, resetPassword } from '../auth';
 import { createUserOnFirebase, getUserDataByEmail } from '../database';
 import { storeUserData } from '../localStorage';
 
@@ -49,6 +49,26 @@ const LoginPage = props => {
       storeUserData(initialUserData);
       props.setUserData(initialUserData);
       console.log(`${userName} is stored during register process`);
+    }
+  };
+
+  const validate = text => {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(text) === false) {
+      window.alert('Email cím nem megfelelő formátumú!');
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const resetPass = async () => {
+    if (email === '') {
+      window.alert('Töltsd ki az email címedet majd nyomd meg újra ezt a gombot');
+    } else {
+      if (validate(email)) {
+        resetPassword(email);
+      }
     }
   };
 
@@ -102,6 +122,9 @@ const LoginPage = props => {
                 onChangeText={setPasswordConfirm}
               />
             )}
+            <TouchableOpacity onPress={resetPass}>
+              <Text style={styles.forgotPassword}>Elfelejtett jelszó</Text>
+            </TouchableOpacity>
             {isSignUpActive ? (
               <Button title="Regisztráció" onPress={register} />
             ) : (
@@ -171,6 +194,13 @@ const styles = StyleSheet.create({
   },
   activeText: {
     color: '#ffffff',
+  },
+  forgotPassword: {
+    marginLeft: 'auto',
+    paddingBottom: 10,
+    paddingRight: 20,
+    fontSize: 13,
+    fontStyle: 'italic',
   },
 });
 export default LoginPage;
